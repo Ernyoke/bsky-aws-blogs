@@ -1,0 +1,54 @@
+{
+  "name": "bsky-bot",
+  "version": "1.0.0",
+  "description": "A template repo for building Bluesky bots",
+  "main": "dist/local.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src/",
+    "build": "tsc",
+    "build:prod": "tsc",
+    "postbuild:prod": "cp package*.json dist && (cd dist && npm ci --cpu=x64 --os=linux --omit=dev --ignore-scripts)",
+    "watch": "tsc --watch",
+    "start": "node .",
+    "dev": "nodenv ."
+  },
+  "keywords": [
+    "bsky",
+    "bluesky",
+    "atproto",
+    "bot"
+  ],
+  "author": {
+    "name": "Ervin Szilagyi",
+    "url": "https://ervinszilagyi.dev"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/lodash": "^4.17.13",
+    "@types/node": "^18.16.2",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "cpx": "^1.5.0",
+    "eslint": "^8.39.0",
+    "eslint-plugin-sonarjs": "^0.19.0",
+    "fs-extra": "^11.2.0",
+    "node-env-run": "^4.0.2",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.2.11",
+    "@aws-lambda-powertools/logger": "^2.10.0",
+    "@aws-lambda-powertools/parameters": "^2.10.0",
+    "@aws-sdk/client-dynamodb": "^3.679.0",
+    "@aws-sdk/client-secrets-manager": "^3.679.0",
+    "@aws-sdk/util-dynamodb": "^3.682.0",
+    "buffer-image-size": "^0.6.4",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.21.4"
+  }
+}
