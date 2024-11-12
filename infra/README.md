@@ -1,6 +1,6 @@
 # infra
 
-This is the infrastructure for the [AWS Community Builder Blogposts](https://bsky.app/profile/awscmblogposts.bsky.social) bot.
+This is the infrastructure for the [AWS Blogs on 🦋](https://bsky.app/profile/awsblogs.bsky.social) bot.
 
 ## Deployments Steps
 

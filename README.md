@@ -1,8 +1,9 @@
-# bsky-aws-community-builder-blogposts
+# bsky-aws-blogs
 
 ## What is this?
 
-This project contains the source code for [AWS Community Builder Blog Posts](https://bsky.app/profile/awscmblogposts.bsky.social) bot. The purpose of this bot is to automatically re-share blog posts published by AWS Community Builders on [DEV.to](https://dev.to/aws-builders).
+This project contains the source code for [AWS Blogs on 🦋](https://bsky.app/profile/awsblogs.bsky.social) bot. 
+The purpose of this bot is to automatically re-share blog posts published by AWS employees/partners on [aws.amazon.com/blogs](https://aws.amazon.com/blogs)
 
 ## Deployment
 

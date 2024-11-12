@@ -1,6 +1,6 @@
-# bsky-aws-community-builder-blogposts-lambda 🦋
+# bsky-aws-blogs 🦋
 
-This is a Lambda Function which querries the Forem (DEV.to) on a schedule. If there are new blog posts, re-shares them on BlueSky.
+This is a Lambda Function which querries the aws.amazon.com/blogs API on a schedule. If there are new blog posts, re-shares them on BlueSky.
 
 ## How to use
 
