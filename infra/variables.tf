@@ -15,6 +15,14 @@ variable "bsky_password" {
   type = string
 }
 
+variable "bsky_deprecations_handle" {
+  type = string
+}
+
+variable "bsky_deprecations_password" {
+  type = string
+}
+
 variable "dry_run" {
   type    = bool
   default = true
