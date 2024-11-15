@@ -18,7 +18,7 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = {
       BSKY_DRY_RUN = var.dry_run
-      TABLE_NAME = aws_dynamodb_table.table.name
+      TABLE_NAME   = aws_dynamodb_table.table.name
     }
   }
 }

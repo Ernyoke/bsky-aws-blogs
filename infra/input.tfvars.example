@@ -1,3 +1,5 @@
-bsky_password = 
-bsky_handle   = 
-dry_run       = false
+bsky_password              =
+bsky_handle                =
+bsky_deprecations_password =
+bsky_deprecations_handle   =
+dry_run                    = false
