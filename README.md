@@ -3,7 +3,8 @@
 ## What is this?
 
 This project contains the source code for [AWS Blogs on 🦋](https://bsky.app/profile/awsblogs.bsky.social) and for [Deprecated by AWS](https://bsky.app/profile/deprecatedbyaws.bsky.social) bots. 
-The purpose of this bot is to automatically re-share blog posts published by AWS employees/partners on [aws.amazon.com/blogs](https://aws.amazon.com/blogs)
+
+The purpose of these bot is to automatically re-share blog posts published by AWS employees/partners on [aws.amazon.com/blogs](https://aws.amazon.com/blogs)
 
 ## Deployment
 
