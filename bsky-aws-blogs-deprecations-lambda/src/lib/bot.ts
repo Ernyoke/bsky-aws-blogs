@@ -6,6 +6,7 @@ import {Logger} from "@aws-lambda-powertools/logger";
 import moment from "moment";
 import sizeOf from "buffer-image-size";
 import sharp from "sharp";
+import { dedent } from "ts-dedent";
 
 const {BskyAgent} = atproto;
 
@@ -31,7 +32,7 @@ export default class Bot {
         return this.#agent.login(loginOpts);
     }
 
-    async post(article: Article, dryRun: boolean = defaultOptions.dryRun) {
+    async post(article: Article, deprecatedServices: string[], dryRun: boolean = defaultOptions.dryRun) {
         if (dryRun) {
             this.logger.info(`Article with title ${article.title} not posted! Reason: dry run.`);
             return;
@@ -41,9 +42,14 @@ export default class Bot {
 
         const coverImageData = await this.resizeAndUploadImage(article.cover);
 
-        const titleAndAuthors = `📰 New article by ${article.authorList.join(', ')}\n\n${article.title}\n`;
+        const warningWithServices: string = dedent`
+            ⚠️ Deprecation warning!
+            
+            The following services are getting deprecated: ${deprecatedServices.join(', ')}
+            
+            `;
 
-        let offset = encoder.encode(titleAndAuthors).byteLength + 1;
+        let offset = encoder.encode(warningWithServices).byteLength + 1;
 
         const tagsFacets = [];
         const hashTags: string[] = [];
@@ -68,7 +74,10 @@ export default class Bot {
         }
         textLineWithTags += `${hashTags.join(' ')}`;
 
-        const fullText = `${titleAndAuthors}\n${textLineWithTags}`;
+        const fullText = dedent`${warningWithServices}
+        ${textLineWithTags}
+        
+        Read the full article:`;
 
         const record = {
             '$type': 'app.bsky.feed.post',

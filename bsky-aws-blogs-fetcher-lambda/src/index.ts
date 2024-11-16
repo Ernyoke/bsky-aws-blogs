@@ -10,8 +10,8 @@ const logger = new Logger();
 const db = new DynamoClient(logger);
 const snsPublisher = new SNSPublisher(logger);
 
-const postsPerPage = 1;
-const maxPagesToFetch = 1;
+const postsPerPage = 10;
+const maxPagesToFetch = 3;
 
 async function main() {
     const articlesToPost: Article[] = [];
@@ -36,9 +36,6 @@ async function main() {
             if (!checkResult?.value && article) {
                 recentlyPublished.push(article);
             }
-
-            //TODO
-            recentlyPublished.push(...articles);
         }
 
         for (const failure of checkFailures) {
@@ -57,8 +54,8 @@ async function main() {
         const countPublished = await snsPublisher.publishArticles(articlesToPost);
         logger.info(`${countPublished} published to SNS.`);
 
-        // const countSaved = await db.saveArticles(articlesToPost);
-        // logger.info(`${countSaved} articles were saved into DynamoDB.`);
+        const countSaved = await db.saveArticles(articlesToPost);
+        logger.info(`${countSaved} articles were saved into DynamoDB.`);
     } else {
         logger.info(`No new articles.`);
     }

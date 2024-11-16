@@ -34,7 +34,7 @@ resource "aws_cloudwatch_event_rule" "fetcher_every_five_minutes" {
   name                = "${local.fetcher_function_name}-every-5-min"
   description         = "Run ${local.fetcher_function_name} every five minutes"
   schedule_expression = "rate(5 minutes)"
-  state               = "DISABLED"
+  state               = "ENABLED"
 }
 
 resource "aws_cloudwatch_event_target" "fetcher_target" {

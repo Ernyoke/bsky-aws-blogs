@@ -27,7 +27,11 @@ const art2 = new Article(
 const event = {
     Records: [
         {
-            messageId: "id",
+            messageId: "id1",
+            body: JSON.stringify(art)
+        },
+        {
+            messageId: "id2",
             body: JSON.stringify(art2)
         }
     ]

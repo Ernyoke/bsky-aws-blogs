@@ -14,13 +14,22 @@ resource "aws_lambda_function" "deprecations_lambda" {
   source_code_hash = data.archive_file.deprecations_lambda_zip.output_base64sha256
   timeout          = 60 * 5 // 5 minutes
   architectures    = ["arm64"]
+  reserved_concurrent_executions = 1
 
   environment {
     variables = {
       BSKY_DRY_RUN = var.dry_run
+      SECRET_NAME  = aws_secretsmanager_secret.deprecations_bsky_secrets.name
       TABLE_NAME   = aws_dynamodb_table.table.name
+      BEDROCK_MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
+      BEDROCK_REGION = var.region
     }
   }
+}
+
+resource "aws_lambda_function_event_invoke_config" "deprecations_event_invoke_config" {
+  function_name                = aws_lambda_function.deprecations_lambda.function_name
+  maximum_retry_attempts       = 0
 }
 
 data "archive_file" "deprecations_lambda_zip" {
@@ -33,7 +42,7 @@ resource "aws_lambda_event_source_mapping" "deprecations_event_source_mapping" {
   event_source_arn = aws_sqs_queue.deprecations_queue.arn
   enabled          = true
   function_name    = aws_lambda_function.deprecations_lambda.arn
-  batch_size       = 1
+  batch_size       = 10
 }
 
 ## Lambda Role

@@ -1,15 +1,13 @@
-# bsky-aws-blogs 🦋
+# bsky-aws-blogs-lambda 🦋
 
-This is a Lambda Function which querries the aws.amazon.com/blogs API on a schedule. If there are new blog posts, re-shares them on BlueSky.
+Listens to an SQS queue where new blog posts are pushed. Re-shares them to https://bsky.app/profile/awsblogs.bsky.social
 
 ## How to use
 
 ### Things you will need
 
-- A Bluesky account
-
-BlueSky is free and available for everyone. Sign up here: https://bsky.app/
-
+- A BlueSky account. Sign up here: https://bsky.app/
+- An AWS account
 - Node.js
 
 To build this repo, you need [Node.js](https://nodejs.org/en) version 20.x.

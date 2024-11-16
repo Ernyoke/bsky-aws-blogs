@@ -3,11 +3,11 @@ import {ChatPromptTemplate} from "@langchain/core/prompts";
 import {BedrockChat} from "@langchain/community/chat_models/bedrock";
 import {StructuredOutputParser} from "@langchain/core/output_parsers";
 import {RunnableSequence} from "@langchain/core/runnables";
+import {config} from "./config.js";
 
 const model = new BedrockChat({
-    // model: "anthropic.claude-instant-v1",
-    model: "anthropic.claude-3-haiku-20240307-v1:0",
-    region: 'us-east-1'
+    model: config.bedrockModelId,
+    region: config.bedrockRegion
 });
 
 const prompt = ChatPromptTemplate.fromMessages([
@@ -40,7 +40,7 @@ const parser = StructuredOutputParser.fromZodSchema(
     })
 );
 
-export async function isAboutDeprecation(title: string, content: string) {
+export async function checkIfArticleContainsDeprecations(title: string, content: string) {
 
     const chain = RunnableSequence.from([
         prompt,
