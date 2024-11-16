@@ -18,8 +18,8 @@ resource "aws_lambda_function" "fetcher_lambda" {
   environment {
     variables = {
       TABLE_NAME = aws_dynamodb_table.table.name
-      TOPIC_ARN = aws_sns_topic.topic.arn
-      DRY_RUN = "false"
+      TOPIC_ARN  = aws_sns_topic.topic.arn
+      DRY_RUN    = "false"
     }
   }
 }

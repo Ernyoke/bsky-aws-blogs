@@ -4,32 +4,32 @@ locals {
 }
 
 resource "aws_lambda_function" "deprecations_lambda" {
-  function_name    = local.deprecations_function_name
-  handler          = "index.handler"
-  memory_size      = 1024
-  package_type     = "Zip"
-  role             = aws_iam_role.deprecations_lambda_role.arn
-  runtime          = "nodejs20.x"
-  filename         = local.deprecations_zip_path
-  source_code_hash = data.archive_file.deprecations_lambda_zip.output_base64sha256
-  timeout          = 60 * 5 // 5 minutes
-  architectures    = ["arm64"]
+  function_name                  = local.deprecations_function_name
+  handler                        = "index.handler"
+  memory_size                    = 1024
+  package_type                   = "Zip"
+  role                           = aws_iam_role.deprecations_lambda_role.arn
+  runtime                        = "nodejs20.x"
+  filename                       = local.deprecations_zip_path
+  source_code_hash               = data.archive_file.deprecations_lambda_zip.output_base64sha256
+  timeout                        = 60 * 5 // 5 minutes
+  architectures                  = ["arm64"]
   reserved_concurrent_executions = 1
 
   environment {
     variables = {
-      BSKY_DRY_RUN = var.dry_run
-      SECRET_NAME  = aws_secretsmanager_secret.deprecations_bsky_secrets.name
-      TABLE_NAME   = aws_dynamodb_table.table.name
+      BSKY_DRY_RUN     = var.dry_run
+      SECRET_NAME      = aws_secretsmanager_secret.deprecations_bsky_secrets.name
+      TABLE_NAME       = aws_dynamodb_table.table.name
       BEDROCK_MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
-      BEDROCK_REGION = var.region
+      BEDROCK_REGION   = var.region
     }
   }
 }
 
 resource "aws_lambda_function_event_invoke_config" "deprecations_event_invoke_config" {
-  function_name                = aws_lambda_function.deprecations_lambda.function_name
-  maximum_retry_attempts       = 0
+  function_name          = aws_lambda_function.deprecations_lambda.function_name
+  maximum_retry_attempts = 0
 }
 
 data "archive_file" "deprecations_lambda_zip" {

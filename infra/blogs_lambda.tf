@@ -4,22 +4,22 @@ locals {
 }
 
 resource "aws_lambda_function" "blogs_lambda" {
-  function_name    = local.blogs_function_name
-  handler          = "index.handler"
-  memory_size      = 1024
-  package_type     = "Zip"
-  role             = aws_iam_role.blogs_lambda_role.arn
-  runtime          = "nodejs20.x"
-  filename         = local.blogs_zip_path
-  source_code_hash = data.archive_file.blogs_lambda_zip.output_base64sha256
-  timeout          = 60 * 5 // 5 minutes
-  architectures    = ["arm64"]
+  function_name                  = local.blogs_function_name
+  handler                        = "index.handler"
+  memory_size                    = 1024
+  package_type                   = "Zip"
+  role                           = aws_iam_role.blogs_lambda_role.arn
+  runtime                        = "nodejs20.x"
+  filename                       = local.blogs_zip_path
+  source_code_hash               = data.archive_file.blogs_lambda_zip.output_base64sha256
+  timeout                        = 60 * 5 // 5 minutes
+  architectures                  = ["arm64"]
   reserved_concurrent_executions = 1
 
   environment {
     variables = {
       BSKY_DRY_RUN = var.dry_run
-      TABLE_NAME   = aws_dynamodb_table.table.name
+      SECRET_NAME  = aws_secretsmanager_secret.bsky_secrets.name
     }
   }
 }

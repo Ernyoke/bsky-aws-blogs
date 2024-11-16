@@ -92,7 +92,6 @@ export default class Bot {
     }
 
     async resizeAndUploadImage(url: string | null | undefined, dryRun: boolean = defaultOptions.dryRun) {
-
         if (!url) {
             this.logger.info(`Empty source url provided for the cover image! Skipping uploading it!`);
             return;
