@@ -2,7 +2,7 @@
 
 ## What is this?
 
-This project contains the source code for [AWS Blogs on 🦋](https://bsky.app/profile/awsblogs.bsky.social) bot. 
+This project contains the source code for [AWS Blogs on 🦋](https://bsky.app/profile/awsblogs.bsky.social) and for [Deprecated by AWS](https://bsky.app/profile/deprecatedbyaws.bsky.social) bots. 
 The purpose of this bot is to automatically re-share blog posts published by AWS employees/partners on [aws.amazon.com/blogs](https://aws.amazon.com/blogs)
 
 ## Deployment
@@ -17,15 +17,27 @@ The purpose of this bot is to automatically re-share blog posts published by AWS
 
 ### Deployment Steps
 
-1. Build the lambda function:
+1. Build the lambda functions:
 
 ```
-cd bsky-aws-community-builder-blogposts-lambda
+cd bsky-aws-blogs-deprecations-lambda
 npm ci
 npm run build:prod
 ```
 
-2. Deploy the infrastructure
+```
+cd bsky-aws-blogs-fetcher-lambda
+npm ci
+npm run build:prod
+```
+
+```
+cd bsky-aws-blogs-lambda
+npm ci
+npm run build:prod
+```
+
+1. Deploy the infrastructure
 
 ```
 cd infra

@@ -1,12 +1,12 @@
-# bsky-aws-blogs-lambda 🦋
+# bsky-aws-blogs-fetcher-lambda 🦋
 
-Listens to an SQS queue where new blog posts are pushed. Re-shares them to https://bsky.app/profile/awsblogs.bsky.social
+This is a Lambda Function which querries the aws.amazon.com/blogs API on a schedule. 
+If there are new blog posts, it will publish it to an SNS topic.
 
 ## How to use
 
 ### Things you will need
 
-- A BlueSky account. Sign up here: https://bsky.app/
 - An AWS account
 - Node.js
 

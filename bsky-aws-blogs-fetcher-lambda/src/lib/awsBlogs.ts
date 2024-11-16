@@ -32,6 +32,7 @@ const categories: { [key: string]: string[] } = {
     'alps': ['Alps', 'AWSInSwitzerlandAndAustria'],
     'architecture': ['Architecture'],
     'aws-cost-management': ['AWSCostManagement'],
+    'aws-cloud-financial-management': ['AWSCloudFinancialManagement'],
     'apn': ['AWSPartnerNetwork'],
     'awsmarketplace': ['AWSMarketplace'],
     'aws': ['News'],
@@ -39,12 +40,12 @@ const categories: { [key: string]: string[] } = {
     'big-data': ['BigData'],
     'business-productivity': ['BusinessProductivity'],
     'compute': ['Compute'],
-    'contact-center': ['ContactCenter'],
+    'contact-center': ['ContactCenters'],
     'containers': ['Containers'],
     'database': ['Databases'],
-    'desktop-and-application-streaming': ['DesktopApplication', 'Streaming'],
+    'desktop-and-application-streaming': ['DesktopStreaming', 'ApplicationStreaming'],
     'developer': ['Developers'],
-    'devops': ['DevOps'],
+    'devops': ['DevOps', 'DeveloperProductivity'],
     'enterprise-strategy': ['EnterpriseStrategy'],
     'mobile': ['FrontEnd', 'Mobile'],
     'gametech': ['GameTech'],
@@ -91,7 +92,7 @@ function extractMainCategories(link: string) {
 }
 
 function dropResolutionFromCoverImage(link: string) {
-    const groups = /^https:\/\/.*(?<suffix>(?<dimemsopm>-[0-9].*x[0-9].*)(?<extension>\..*$))/.exec(link)?.groups;
+    const groups = /^https:\/\/.*(?<suffix>(?<dimemson>-[0-9].*x[0-9].*)(?<extension>\..*$))/.exec(link)?.groups;
     if (groups && groups.suffix) {
         return `${link.replace(groups.suffix, '')}${groups.extension}`;
     }

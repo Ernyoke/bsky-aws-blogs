@@ -37,6 +37,8 @@ const event = {
     ]
 } as SQSEvent;
 
+console.log(JSON.stringify(art2));
+
 await handler(event, {} as Context, () => {
     console.log("Finished");
 });

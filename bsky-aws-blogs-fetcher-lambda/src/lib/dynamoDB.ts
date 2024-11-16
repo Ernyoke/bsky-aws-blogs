@@ -37,7 +37,7 @@ export default class DynamoClient {
         return response.Items && response.Items.length > 0;
     }
 
-    async saveArticles(articles: Article[], dryRun: boolean = config.bskyDryRun) {
+    async saveArticles(articles: Article[], dryRun: boolean = config.dryRun) {
         if (dryRun) {
             this.logger.warn('Articles not saved into DynamoDB. Reason: dry-run');
             return 0;
