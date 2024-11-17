@@ -51,7 +51,7 @@ resource "aws_lambda_permission" "fetcher_lambda_permission" {
   source_arn    = aws_cloudwatch_event_rule.fetcher_every_five_minutes.arn
 }
 
-## Lambda Role
+# Lambda Role
 data "aws_iam_policy_document" "fetcher_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -107,7 +107,7 @@ resource "aws_iam_role_policy_attachment" "fetcher_dynamodb_access" {
   role       = aws_iam_role.fetcher_lambda_role.name
 }
 
-## Allow publish to SNS
+# Allow publish to SNS
 data "aws_iam_policy_document" "fetcher_publish_sns" {
   statement {
     effect = "Allow"
@@ -131,7 +131,6 @@ resource "aws_iam_role_policy_attachment" "fetcher_publish_sns" {
   policy_arn = aws_iam_policy.fetcher_publish_sns.arn
   role       = aws_iam_role.fetcher_lambda_role.name
 }
-
 
 resource "aws_cloudwatch_log_group" "fetcher_function_log_group" {
   name              = "/aws/lambda/${aws_lambda_function.fetcher_lambda.function_name}"

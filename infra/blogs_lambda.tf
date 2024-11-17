@@ -16,6 +16,10 @@ resource "aws_lambda_function" "blogs_lambda" {
   architectures                  = ["arm64"]
   reserved_concurrent_executions = 1
 
+  dead_letter_config {
+    target_arn = aws_sqs_queue.blogs_lambda_dlq.arn
+  }
+
   environment {
     variables = {
       BSKY_DRY_RUN = var.dry_run
@@ -37,7 +41,7 @@ resource "aws_lambda_event_source_mapping" "blogs_event_source_mapping" {
   batch_size       = 10
 }
 
-## Lambda Role
+# Lambda Role
 data "aws_iam_policy_document" "blogs_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -59,7 +63,7 @@ resource "aws_iam_role_policy_attachment" "blogs_basic_execution" {
   role       = aws_iam_role.blogs_lambda_role.name
 }
 
-## Allow access to Secrets Manager
+# Allow access to Secrets Manager
 data "aws_iam_policy_document" "blogs_read_secrets" {
   statement {
     effect = "Allow"
@@ -87,7 +91,7 @@ resource "aws_iam_role_policy_attachment" "blogs_read_secrets" {
   role       = aws_iam_role.blogs_lambda_role.name
 }
 
-## Allow receiving messages from SQS
+# Allow receiving messages from SQS
 data "aws_iam_policy_document" "blogs_receive_sqs" {
   statement {
     effect = "Allow"
@@ -111,6 +115,36 @@ resource "aws_iam_policy" "blogs_receive_sqs" {
 
 resource "aws_iam_role_policy_attachment" "blogs_receive_sqs" {
   policy_arn = aws_iam_policy.blogs_receive_sqs.arn
+  role       = aws_iam_role.blogs_lambda_role.name
+}
+
+# DLQ for failed async executions
+resource "aws_sqs_queue" "blogs_lambda_dlq" {
+  name = "${local.blogs_function_name}-dlq"
+}
+
+# Allow sending failed messages to DLQ
+data "aws_iam_policy_document" "blogs_lambda_dlq" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      aws_sqs_queue.blogs_lambda_dlq.arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "blogs_lambda_dlq" {
+  name   = "${local.blogs_function_name}-dlq"
+  path   = "/"
+  policy = data.aws_iam_policy_document.blogs_lambda_dlq.json
+}
+
+resource "aws_iam_role_policy_attachment" "blogs_lambda_dlq" {
+  policy_arn = aws_iam_policy.blogs_lambda_dlq.arn
   role       = aws_iam_role.blogs_lambda_role.name
 }
 

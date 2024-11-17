@@ -16,6 +16,10 @@ resource "aws_lambda_function" "deprecations_lambda" {
   architectures                  = ["arm64"]
   reserved_concurrent_executions = 1
 
+  dead_letter_config {
+    target_arn = aws_sqs_queue.deprecations_lambda_dlq.arn
+  }
+
   environment {
     variables = {
       BSKY_DRY_RUN     = var.dry_run
@@ -45,7 +49,7 @@ resource "aws_lambda_event_source_mapping" "deprecations_event_source_mapping" {
   batch_size       = 10
 }
 
-## Lambda Role
+# Lambda Role
 data "aws_iam_policy_document" "deprecations_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -67,7 +71,7 @@ resource "aws_iam_role_policy_attachment" "deprecations_basic_execution" {
   role       = aws_iam_role.deprecations_lambda_role.name
 }
 
-## Allow receiving messages from SQS
+# Allow receiving messages from SQS
 data "aws_iam_policy_document" "deprecations_receive_sqs" {
   statement {
     effect = "Allow"
@@ -94,7 +98,7 @@ resource "aws_iam_role_policy_attachment" "deprecations_receive_sqs" {
   role       = aws_iam_role.deprecations_lambda_role.name
 }
 
-## Allow access to Secrets Manager
+# Allow access to Secrets Manager
 data "aws_iam_policy_document" "deprecations_read_secrets" {
   statement {
     effect = "Allow"
@@ -122,7 +126,7 @@ resource "aws_iam_role_policy_attachment" "deprecations_read_secrets" {
   role       = aws_iam_role.deprecations_lambda_role.name
 }
 
-## Invoke Bedrock
+# Invoke Bedrock
 data "aws_iam_policy_document" "deprecations_invoke_bedrock" {
   statement {
     effect = "Allow"
@@ -145,6 +149,36 @@ resource "aws_iam_policy" "deprecations_invoke_bedrock" {
 
 resource "aws_iam_role_policy_attachment" "deprecations_invoke_bedrock" {
   policy_arn = aws_iam_policy.deprecations_invoke_bedrock.arn
+  role       = aws_iam_role.deprecations_lambda_role.name
+}
+
+# DLQ for failed async executions
+resource "aws_sqs_queue" "deprecations_lambda_dlq" {
+  name = "${local.deprecations_function_name}-dlq"
+}
+
+# Allow sending failed messages to DLQ
+data "aws_iam_policy_document" "deprecations_send_dlq" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      aws_sqs_queue.deprecations_lambda_dlq.arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "deprecations_send_dlq" {
+  name   = "${local.fetcher_function_name}-dlq"
+  path   = "/"
+  policy = data.aws_iam_policy_document.deprecations_send_dlq.json
+}
+
+resource "aws_iam_role_policy_attachment" "deprecations_send_dlq" {
+  policy_arn = aws_iam_policy.deprecations_send_dlq.arn
   role       = aws_iam_role.deprecations_lambda_role.name
 }
 
