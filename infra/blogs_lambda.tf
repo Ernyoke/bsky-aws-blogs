@@ -1,20 +1,20 @@
 locals {
-  blogs_function_name = "${var.project_name}-lambda"
-  blogs_zip_path      = "${path.module}/temp/${local.blogs_function_name}.zip"
+  blogs_function_name  = "${var.project_name}-lambda"
+  blogs_zip_path       = "${path.module}/temp/${local.blogs_function_name}.zip"
+  blogs_lambda_timeout = 60 * 5 // 5 minutes
 }
 
 resource "aws_lambda_function" "blogs_lambda" {
-  function_name                  = local.blogs_function_name
-  handler                        = "index.handler"
-  memory_size                    = 1024
-  package_type                   = "Zip"
-  role                           = aws_iam_role.blogs_lambda_role.arn
-  runtime                        = "nodejs20.x"
-  filename                       = local.blogs_zip_path
-  source_code_hash               = data.archive_file.blogs_lambda_zip.output_base64sha256
-  timeout                        = 60 * 5 // 5 minutes
-  architectures                  = ["arm64"]
-  reserved_concurrent_executions = 1
+  function_name    = local.blogs_function_name
+  handler          = "index.handler"
+  memory_size      = 1024
+  package_type     = "Zip"
+  role             = aws_iam_role.blogs_lambda_role.arn
+  runtime          = "nodejs20.x"
+  filename         = local.blogs_zip_path
+  source_code_hash = data.archive_file.blogs_lambda_zip.output_base64sha256
+  timeout          = local.blogs_lambda_timeout
+  architectures    = ["arm64"]
 
   dead_letter_config {
     target_arn = aws_sqs_queue.blogs_lambda_dlq.arn
@@ -35,10 +35,15 @@ data "archive_file" "blogs_lambda_zip" {
 }
 
 resource "aws_lambda_event_source_mapping" "blogs_event_source_mapping" {
-  event_source_arn = aws_sqs_queue.blogs_queue.arn
-  enabled          = true
-  function_name    = aws_lambda_function.blogs_lambda.arn
-  batch_size       = 10
+  event_source_arn                   = aws_sqs_queue.blogs_queue.arn
+  enabled                            = true
+  function_name                      = aws_lambda_function.blogs_lambda.arn
+  batch_size                         = 10
+  maximum_batching_window_in_seconds = 60
+
+  scaling_config {
+    maximum_concurrency = 5
+  }
 }
 
 # Lambda Role

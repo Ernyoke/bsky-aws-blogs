@@ -12,7 +12,7 @@ resource "aws_sqs_queue" "blogs_queue" {
   name                       = local.blogs_queue_name
   message_retention_seconds  = 1209600 // 14 days (max)
   receive_wait_time_seconds  = 20      // long polling
-  visibility_timeout_seconds = 300
+  visibility_timeout_seconds = 6 * local.blogs_lambda_timeout
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.blogs_queue_dlq.arn
     maxReceiveCount     = 1
@@ -27,7 +27,7 @@ resource "aws_sqs_queue" "deprecations_queue" {
   name                       = local.deprecations_queue_name
   message_retention_seconds  = 1209600 // 14 days (max)
   receive_wait_time_seconds  = 20      // long polling
-  visibility_timeout_seconds = 300
+  visibility_timeout_seconds = 6 * local.deprecations_lambda_timeout
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.deprecations_queue_dlq.arn
     maxReceiveCount     = 1

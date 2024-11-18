@@ -1,6 +1,7 @@
 locals {
-  deprecations_function_name = "${var.project_name}-deprecations-lambda"
-  deprecations_zip_path      = "${path.module}/temp/${local.deprecations_function_name}.zip"
+  deprecations_function_name  = "${var.project_name}-deprecations-lambda"
+  deprecations_zip_path       = "${path.module}/temp/${local.deprecations_function_name}.zip"
+  deprecations_lambda_timeout = 60 * 5 // 5 minutes
 }
 
 resource "aws_lambda_function" "deprecations_lambda" {
@@ -12,7 +13,7 @@ resource "aws_lambda_function" "deprecations_lambda" {
   runtime                        = "nodejs20.x"
   filename                       = local.deprecations_zip_path
   source_code_hash               = data.archive_file.deprecations_lambda_zip.output_base64sha256
-  timeout                        = 60 * 5 // 5 minutes
+  timeout                        = local.deprecations_lambda_timeout
   architectures                  = ["arm64"]
   reserved_concurrent_executions = 1
 
@@ -43,10 +44,11 @@ data "archive_file" "deprecations_lambda_zip" {
 }
 
 resource "aws_lambda_event_source_mapping" "deprecations_event_source_mapping" {
-  event_source_arn = aws_sqs_queue.deprecations_queue.arn
-  enabled          = true
-  function_name    = aws_lambda_function.deprecations_lambda.arn
-  batch_size       = 10
+  event_source_arn                   = aws_sqs_queue.deprecations_queue.arn
+  enabled                            = true
+  function_name                      = aws_lambda_function.deprecations_lambda.arn
+  batch_size                         = 10
+  maximum_batching_window_in_seconds = 60
 }
 
 # Lambda Role
