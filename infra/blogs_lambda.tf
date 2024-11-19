@@ -40,6 +40,7 @@ resource "aws_lambda_event_source_mapping" "blogs_event_source_mapping" {
   function_name                      = aws_lambda_function.blogs_lambda.arn
   batch_size                         = 10
   maximum_batching_window_in_seconds = 60
+  function_response_types            = ["ReportBatchItemFailures"]
 
   scaling_config {
     maximum_concurrency = 5

@@ -19,6 +19,7 @@ const recordHandler = async (record: SQSRecord): Promise<void> => {
             logger.error(`Failed to post article ${article.id} with title "${article.title} `, {
                 error: ex
             });
+            throw ex;
         }
     }
 };

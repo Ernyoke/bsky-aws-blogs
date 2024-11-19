@@ -15,7 +15,7 @@ resource "aws_sqs_queue" "blogs_queue" {
   visibility_timeout_seconds = 6 * local.blogs_lambda_timeout
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.blogs_queue_dlq.arn
-    maxReceiveCount     = 1
+    maxReceiveCount     = 3
   })
 }
 
@@ -30,7 +30,7 @@ resource "aws_sqs_queue" "deprecations_queue" {
   visibility_timeout_seconds = 6 * local.deprecations_lambda_timeout
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.deprecations_queue_dlq.arn
-    maxReceiveCount     = 1
+    maxReceiveCount     = 3
   })
 }
 

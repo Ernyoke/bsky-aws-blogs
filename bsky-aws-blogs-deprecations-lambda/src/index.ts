@@ -14,19 +14,23 @@ const recordHandler = async (record: SQSRecord): Promise<void> => {
     const payload = record.body;
     if (payload) {
         const article = JSON.parse(payload) as Article;
-        const {isAboutDeprecation, deprecatedServices} = await checkIfArticleContainsDeprecations(article.title, await fetchArticleAsText(article.url));
-        if (isAboutDeprecation) {
-            logger.info(`AI decided that article ${article.id} with title "${article.title}" is about deprecating ${deprecatedServices}.`);
-            try {
-                // const result = await bot.post(article, deprecatedServices);
-                // logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
-            } catch (ex) {
-                logger.error(`Failed to post article ${article.id} with title "${article.title}"`, {
-                    error: ex
-                });
+        try {
+            const {
+                isAboutDeprecation,
+                deprecatedServices
+            } = await checkIfArticleContainsDeprecations(article.title, await fetchArticleAsText(article.url));
+            if (isAboutDeprecation) {
+                logger.info(`AI decided that article ${article.id} with title "${article.title}" is about deprecating ${deprecatedServices}.`);
+                const result = await bot.post(article, deprecatedServices);
+                logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
+            } else {
+                logger.info(`AI decided that article ${article.id} with title "${article.title}" is not about any service deprecation.`);
             }
-        } else {
-            logger.info(`AI decided that article ${article.id} with title "${article.title}" is not about any service deprecation.`);
+        } catch (ex) {
+            logger.error(`Failed to post article ${article.id} with title "${article.title}"`, {
+                error: ex
+            });
+            throw ex;
         }
     }
 };

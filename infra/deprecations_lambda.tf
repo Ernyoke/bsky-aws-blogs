@@ -49,6 +49,7 @@ resource "aws_lambda_event_source_mapping" "deprecations_event_source_mapping" {
   function_name                      = aws_lambda_function.deprecations_lambda.arn
   batch_size                         = 10
   maximum_batching_window_in_seconds = 60
+  function_response_types            = ["ReportBatchItemFailures"]
 }
 
 # Lambda Role
