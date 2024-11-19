@@ -18,8 +18,8 @@ const recordHandler = async (record: SQSRecord): Promise<void> => {
         if (isAboutDeprecation) {
             logger.info(`AI decided that article ${article.id} with title "${article.title}" is about deprecating ${deprecatedServices}.`);
             try {
-                const result = await bot.post(article, deprecatedServices);
-                logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
+                // const result = await bot.post(article, deprecatedServices);
+                // logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
             } catch (ex) {
                 logger.error(`Failed to post article ${article.id} with title "${article.title}"`, {
                     error: ex

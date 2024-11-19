@@ -4,6 +4,7 @@ import {BedrockChat} from "@langchain/community/chat_models/bedrock";
 import {StructuredOutputParser} from "@langchain/core/output_parsers";
 import {RunnableSequence} from "@langchain/core/runnables";
 import {config} from "./config.js";
+import {dedent} from "ts-dedent";
 
 const model = new BedrockChat({
     model: config.bedrockModelId,
@@ -13,9 +14,13 @@ const model = new BedrockChat({
 const prompt = ChatPromptTemplate.fromMessages([
     [
         "system",
-        "You are a AWS expert who's job is to read AWS blog posts and decide if the blogpost is about deprecation of a certain system. " +
-        "If yes, you should list all the services which are deprecated! " +
-        "Use the following format for your answer: {format_instructions}"
+        dedent`You are an AWS expert whose job is to read AWS blog posts and determine whether the blog post is about the 
+        deprecation of an AWS service, product, or any related feature. Examples of such services include EC2, ECS, S3, 
+        and CodeDeploy, among others. If you identify a blog post mentioning the deprecation of any such service or product, 
+        you must respond with a list of all the services or products that are deprecated.
+        Use the following format for your answer: {format_instructions}.
+        IMPORTANT! Ensure that your answer strictly adheres to this format. Do NOT use any other format! Avoid providing 
+        your answer in free-text format.`
     ],
     [
         "human",
