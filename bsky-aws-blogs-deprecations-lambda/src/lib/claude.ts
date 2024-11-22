@@ -8,21 +8,22 @@ import {dedent} from "ts-dedent";
 import {Logger} from "@aws-lambda-powertools/logger";
 
 export class ClaudeModel {
-    prompt = ChatPromptTemplate.fromMessages([
-        [
-            "system",
-            dedent`You are an AWS expert whose job is to read AWS blog posts and determine whether the blog post is about the 
+    systemPrompt = dedent`You are an AWS expert whose job is to read AWS blog posts and determine whether the blog post is about the 
             deprecation of an AWS service, product, or any related feature. Examples of such services include EC2, ECS, S3, 
             and CodeDeploy, among others. If you identify a blog post mentioning the deprecation of any such service or product, 
-            you must respond with a list of all the services or products that are deprecated.
-            Use the following format for your answer: {format_instructions}.
-            IMPORTANT! Ensure that your answer strictly adheres to this format. Do NOT use any other format! Avoid providing 
-            your answer in free-text format.`
+            you must respond with a list of all the services or products that are deprecated.`;
+
+    chat = ChatPromptTemplate.fromMessages([
+        [
+            'system',
+            dedent`{systemPrompt}
+            {formatInstructions}
+            IMPORTANT! Ensure that your answer strictly adheres to JSON RFC 8259. Avoid providing your answer in free-text format.`
         ],
         [
-            "human",
-            dedent`Title: {title}
-            {content}`
+            'human',
+            dedent`Blog title: {title}
+            Blog content: {content}`
         ],
     ]);
 
@@ -52,17 +53,17 @@ export class ClaudeModel {
     }
 
     async checkIfArticleContainsDeprecations(title: string, content: string) {
-
         const chain = RunnableSequence.from([
-            this.prompt,
+            this.chat,
             this.model,
             this.structuredParser,
         ]);
 
         return await chain.invoke({
+            systemPrompt: this.systemPrompt,
             title: title,
             content: content,
-            format_instructions: this.structuredParser.getFormatInstructions(),
+            formatInstructions: this.structuredParser.getFormatInstructions(),
         });
     }
 }

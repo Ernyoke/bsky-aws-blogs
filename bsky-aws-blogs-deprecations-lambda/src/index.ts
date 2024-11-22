@@ -21,7 +21,7 @@ const recordHandler = async (record: SQSRecord): Promise<void> => {
             const articleText = await fetchArticleAsText(article.url);
             switch (await titan.checkIfArticleIsAboutDeprecation(article.title, articleText)) {
                 case Decision.False:
-                    logger.info(`Titan decided that article ${article.id} with title "${article.title}" is about deprecations.`);
+                    logger.info(`Titan decided that article ${article.id} with title "${article.title}" is NOT about deprecations.`);
                     break;
                 case Decision.Unknown:
                     logger.info(`Titan could not decide if article ${article.id} with title "${article.title}" is about deprecations.`);

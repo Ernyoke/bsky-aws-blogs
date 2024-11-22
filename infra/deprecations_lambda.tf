@@ -30,6 +30,7 @@ resource "aws_lambda_function" "deprecations_lambda" {
       CLAUDE_REGION   = var.region
       TITAN_MODEL_ID  = "amazon.titan-text-express-v1"
       TITAN_REGION    = var.region
+      TITAN_MAX_TOKEN_SIZE=8192
     }
   }
 }

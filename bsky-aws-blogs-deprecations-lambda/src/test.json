@@ -1,0 +1,17 @@
+{
+  "id": "blog-posts#34-93255",
+  "title": "Implement secure API access to your Amazon Q Business applications with IAM federation user access management",
+  "postExcerpt": "Amazon Q Business provides a rich set of APIs to perform administrative tasks and to build an AI assistant with customized user experience for your enterprise. In this post, we show how to use Amazon Q Business APIs when using AWS Identity and Access Management (IAM) federation for user access management.",
+  "publishedDate": "2024-11-22T18:02:32+0000",
+  "url": "https://aws.amazon.com/blogs/machine-learning/implement-secure-api-access-to-your-amazon-q-business-applications-with-iam-federation-user-access-management/",
+  "cover": "https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2024/11/19/Picture1-9.jpg",
+  "authorList": [
+    "Abhinav Jawadekar",
+    "Zia Seymour"
+  ],
+  "categories": [
+    "AWS",
+    "AI",
+    "MachineLearning"
+  ]
+}

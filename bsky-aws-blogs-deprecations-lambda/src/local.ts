@@ -46,16 +46,27 @@ const art4 = new Article(
     ['AWS', 'Migrations', 'Modernization']
 );
 
+const art5 = new Article(
+    'blog-posts#34-93255',
+    'Implement secure API access to your Amazon Q Business applications with IAM federation user access management',
+    '',
+    '2024-11-22T18:02:32+0000',
+    'https://aws.amazon.com/blogs/machine-learning/implement-secure-api-access-to-your-amazon-q-business-applications-with-iam-federation-user-access-management/',
+    'https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2024/11/19/Picture1-9.jpg',
+    ["Abhinav Jawadekar", "Zia Seymour"],
+    ["AWS", "AI", "MachineLearning"]
+)
+
 const event = {
     Records: [
-        // {
-        //     messageId: "id1",
-        //     body: JSON.stringify(art)
-        // },
-        // {
-        //     messageId: "id2",
-        //     body: JSON.stringify(art2)
-        // },
+        {
+            messageId: "id1",
+            body: JSON.stringify(art)
+        },
+        {
+            messageId: "id2",
+            body: JSON.stringify(art2)
+        },
         {
             messageId: "id3",
             body: JSON.stringify(art3)
@@ -63,6 +74,10 @@ const event = {
         {
             messageId: "id4",
             body: JSON.stringify(art4)
+        },
+        {
+            messageId: "id5",
+            body: JSON.stringify(art5)
         }
     ]
 } as SQSEvent;

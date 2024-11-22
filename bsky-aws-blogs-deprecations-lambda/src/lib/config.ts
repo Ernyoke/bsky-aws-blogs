@@ -12,6 +12,15 @@ const envSchema = z.object({
     CLAUDE_REGION: z.string().min(1),
     TITAN_MODEL_ID: z.string().min(1),
     TITAN_REGION: z.string().min(1),
+    TITAN_MAX_TOKEN_SIZE: z.string()
+        .transform((val) => {
+            const parsed = Number(val);
+            if (isNaN(parsed)) {
+                throw new Error("Invalid number");
+            }
+            return parsed;
+        })
+        .refine((num) => num >= 0, {message: "Number must be non-negative"})
 });
 
 const envVars = envSchema.parse(env);
@@ -23,7 +32,8 @@ export const config = {
     claudeModelId: envVars.CLAUDE_MODEL_ID,
     claudeRegion: envVars.CLAUDE_REGION,
     titanModelId: envVars.TITAN_MODEL_ID,
-    titanRegion: envVars.TITAN_REGION
+    titanRegion: envVars.TITAN_REGION,
+    titanMaxTokenSize: envVars.TITAN_MAX_TOKEN_SIZE,
 };
 
 const secretsSchema = z.object({
