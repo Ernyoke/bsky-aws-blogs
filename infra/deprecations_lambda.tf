@@ -23,11 +23,13 @@ resource "aws_lambda_function" "deprecations_lambda" {
 
   environment {
     variables = {
-      BSKY_DRY_RUN     = var.dry_run
-      SECRET_NAME      = aws_secretsmanager_secret.deprecations_bsky_secrets.name
-      TABLE_NAME       = aws_dynamodb_table.table.name
-      BEDROCK_MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
-      BEDROCK_REGION   = var.region
+      BSKY_DRY_RUN    = var.dry_run
+      SECRET_NAME     = aws_secretsmanager_secret.deprecations_bsky_secrets.name
+      TABLE_NAME      = aws_dynamodb_table.table.name
+      CLAUDE_MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
+      CLAUDE_REGION   = var.region
+      TITAN_MODEL_ID  = "amazon.titan-text-express-v1"
+      TITAN_REGION    = var.region
     }
   }
 }

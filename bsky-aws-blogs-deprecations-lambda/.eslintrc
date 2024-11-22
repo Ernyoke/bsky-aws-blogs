@@ -10,5 +10,14 @@
     "plugin:sonarjs/recommended"
   ],
   "plugins": ["@typescript-eslint", "sonarjs"],
-  "root": true
+  "root": true,
+  "overrides": [
+    {
+      "files": ["src/index.ts"],
+      "rules": {
+        "no-fallthrough": ["off"],
+        "no-case-declarations": ["off"]
+      }
+    }
+  ]
 }

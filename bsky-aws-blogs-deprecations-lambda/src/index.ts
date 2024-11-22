@@ -3,28 +3,43 @@ import Bot from "./lib/bot.js";
 import {Article} from './lib/article.js';
 import {Logger} from '@aws-lambda-powertools/logger';
 import {fetchArticleAsText} from "./lib/awsBlogs.js";
-import {checkIfArticleContainsDeprecations} from "./lib/bedrock.js";
 import {BatchProcessor, EventType, processPartialResponse} from "@aws-lambda-powertools/batch";
+import {Decision, TitanModel} from "./lib/titan.js";
+import {ClaudeModel} from "./lib/claude.js";
 
 const logger = new Logger();
 const processor = new BatchProcessor(EventType.SQS);
 const bot = new Bot(logger);
+const titan = new TitanModel(logger);
+const claude = new ClaudeModel(logger);
 
 const recordHandler = async (record: SQSRecord): Promise<void> => {
     const payload = record.body;
     if (payload) {
         const article = JSON.parse(payload) as Article;
         try {
-            const {
-                isAboutDeprecation,
-                deprecatedServices
-            } = await checkIfArticleContainsDeprecations(article.title, await fetchArticleAsText(article.url));
-            if (isAboutDeprecation) {
-                logger.info(`AI decided that article ${article.id} with title "${article.title}" is about deprecating ${deprecatedServices}.`);
-                const result = await bot.post(article, deprecatedServices);
-                logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
-            } else {
-                logger.info(`AI decided that article ${article.id} with title "${article.title}" is not about any service deprecation.`);
+            const articleText = await fetchArticleAsText(article.url);
+            switch (await titan.checkIfArticleIsAboutDeprecation(article.title, articleText)) {
+                case Decision.False:
+                    logger.info(`Titan decided that article ${article.id} with title "${article.title}" is about deprecations.`);
+                    break;
+                case Decision.Unknown:
+                    logger.info(`Titan could not decide if article ${article.id} with title "${article.title}" is about deprecations.`);
+                    // Fall through and double check with Claude
+                case Decision.True:
+                    // Double check with Claude
+                    const {
+                        isAboutDeprecation,
+                        deprecationSummary
+                    } = await claude.checkIfArticleContainsDeprecations(article.title, articleText);
+                    if (isAboutDeprecation) {
+                        logger.info(`Claude decided that article ${article.id} with title "${article.title}" is about deprecating services.`);
+                        const result = await bot.post(article, deprecationSummary);
+                        logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
+                    } else {
+                        logger.info(`Claude decided that article ${article.id} with title "${article.title}" is not about any service deprecation.`);
+                    }
+                    break;
             }
         } catch (ex) {
             logger.error(`Failed to post article ${article.id} with title "${article.title}"`, {

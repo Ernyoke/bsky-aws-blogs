@@ -32,7 +32,7 @@ export default class Bot {
         return this.#agent.login(loginOpts);
     }
 
-    async post(article: Article, deprecatedServices: string[], dryRun: boolean = defaultOptions.dryRun) {
+    async post(article: Article, deprecationSummary: string, dryRun: boolean = defaultOptions.dryRun) {
         if (dryRun) {
             this.logger.info(`Article with title ${article.title} not posted! Reason: dry run.`);
             return;
@@ -45,7 +45,7 @@ export default class Bot {
         const warningWithServices: string = dedent`
             ⚠️ Deprecation warning!
             
-            The following services are getting deprecated: ${deprecatedServices.join(', ')}
+            ${deprecationSummary}
             
             `;
 

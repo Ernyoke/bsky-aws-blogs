@@ -24,15 +24,45 @@ const art2 = new Article(
     ['AWS', 'AmazonKinesis']
 );
 
+const art3 = new Article(
+    'blog-posts#55-9012',
+    'Event-driven Active Directory domain join with Amazon EventBridge',
+    'In this blog post, I will show you how Amazon EventBridge can automate Microsoft Active Directory (AD) domain join and unjoin for your Amazon Elastic Compute Cloud (Amazon EC2) instances. In a previous blog post, I showed you how AWS Systems Manager Automation can dynamically domain join and unjoin EC2 instances manually. I have worked [...]',
+    '2024-11-22T03:28:31Z',
+    'https://aws.amazon.com/blogs/modernizing-with-aws/event-driven-active-directory-domain-join-with-amazon-eventbridge/',
+    'https://d2908q01vomqb2.cloudfront.net/8effee409c625e1a2d8f5033631840e6ce1dcb64/2024/11/22/Screenshot-2024-11-21-222739-300x157.jpg',
+    ['Syed Ahmad'],
+    ['AWS', 'Modernization']
+);
+
+const art4 = new Article(
+    'blog-posts#74-935',
+    'Deprecation of AWS Application Discovery Service Discovery Connector',
+    'After careful consideration, we have made the decision to end support for AWS Application Discovery Service Discovery Connector (Discovery Connector) effective November 17, 2025. This decision was made to enable focus on the new on-premises discovery tool AWS Application Discovery Service Agentless Collector (Agentless Collector). This decision stems from customer preference to use agentless collection for [...]',
+    '2024-11-12T18:06:24Z',
+    'https://aws.amazon.com/blogs/migration-and-modernization/deprecation-of-aws-application-discovery-service-discovery-connector/',
+    'https://d2908q01vomqb2.cloudfront.net/1f1362ea41d1bc65be321c0a378a20159f9a26d0/2024/11/05/Deprecation-of-AWS-Application-Discovery-Service-Discovery-Connector-300x169.png',
+    ['Krysha Nair', 'Gabriel Wiebe'],
+    ['AWS', 'Migrations', 'Modernization']
+);
+
 const event = {
     Records: [
+        // {
+        //     messageId: "id1",
+        //     body: JSON.stringify(art)
+        // },
+        // {
+        //     messageId: "id2",
+        //     body: JSON.stringify(art2)
+        // },
         {
-            messageId: "id1",
-            body: JSON.stringify(art)
+            messageId: "id3",
+            body: JSON.stringify(art3)
         },
         {
-            messageId: "id2",
-            body: JSON.stringify(art2)
+            messageId: "id4",
+            body: JSON.stringify(art4)
         }
     ]
 } as SQSEvent;
