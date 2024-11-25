@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf node_modules && rm -rf dist",
     "lint": "eslint src/",
     "build": "tsc",
-    "build:prod": "tsc",
-    "postbuild:prod": "cp package*.json dist && (cd dist && npm ci --cpu=arm64 --os=linux --omit=dev --ignore-scripts)",
+    "postbuild": "cp package*.json dist",
     "watch": "tsc --watch",
     "start": "node .",
     "dev": "nodenv ."
@@ -37,13 +37,14 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.10.0",
-    "@aws-lambda-powertools/parameters": "^2.10.0",
+    "@aws-lambda-powertools/logger": "^2.11.0",
+    "@aws-lambda-powertools/parameters": "^2.11.0",
     "@aws-sdk/client-dynamodb": "^3.679.0",
     "@aws-sdk/client-sns": "^3.691.0",
     "@aws-sdk/util-dynamodb": "^3.682.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
+    "shared": "file:../shared",
     "zod": "^3.21.4"
   }
 }

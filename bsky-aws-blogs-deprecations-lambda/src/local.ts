@@ -1,6 +1,6 @@
 import {handler} from "./index.js";
 import {Context, SQSEvent} from 'aws-lambda';
-import {Article} from "./lib/article.js";
+import {Article} from "shared";
 
 const art = new Article(
     'blog-posts#25-16210',

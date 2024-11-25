@@ -1,4 +1,4 @@
-export class Article {
+export default class Article {
     constructor(public id: string,
                 public title: string,
                 public postExcerpt: string,

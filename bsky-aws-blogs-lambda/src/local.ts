@@ -1,6 +1,6 @@
 import {handler} from "./index.js";
 import {Context, SQSEvent} from 'aws-lambda';
-import {Article} from "./lib/article.js";
+import {Article} from "shared";
 
 const art = new Article(
     'blog-posts#25-16210',
@@ -24,6 +24,17 @@ const art2 = new Article(
     ['AWS', 'AmazonKinesis']
 );
 
+const artWithResizeImageAccessDenied = new Article(
+    'blog-posts#50-23678',
+    'Fundrise uses Amazon S3 Express One Zone to accelerate investment data processing',
+    'Fundrise is a financial technology company that brings alternative investments directly to individual investors. With more than 2 million users, Fundrise is one of the leading platforms of its kind in the United States. The challenge of providing a smooth, secure, and transparent experience for millions of users is largely unprecedented in the alternative investment [...]',
+    '2024-11-22T23:38:56+0000',
+    'https://aws.amazon.com/blogs/storage/fundrise-uses-amazon-s3-express-one-zone-to-accelerate-investment-data-processing/',
+    'https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2024/09/19/Amazon-S3-Express-One-Zone-thumbnail-e1726771394157.png',
+    ['Louie Tambellini','Matt Krauser','Sam Farber','Karthik Akula'],
+    ['AWS', 'Storage']
+);
+
 const event = {
     Records: [
         {
@@ -33,6 +44,10 @@ const event = {
         {
             messageId: "id2",
             body: JSON.stringify(art2)
+        },
+        {
+            messageId: "id3",
+            body: JSON.stringify(artWithResizeImageAccessDenied)
         }
     ]
 } as SQSEvent;

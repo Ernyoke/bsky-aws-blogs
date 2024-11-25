@@ -1,6 +1,7 @@
 locals {
-  fetcher_function_name = "${var.project_name}-fetcher-lambda"
-  fetcher_zip_path      = "${path.module}/temp/${local.fetcher_function_name}.zip"
+  fetcher_function_name  = "${var.project_name}-fetcher-lambda"
+  fetcher_zip_path       = "${path.module}/temp/${local.fetcher_function_name}.zip"
+  fetcher_layer_zip_path = "${path.module}/temp/${local.fetcher_function_name}-layer.zip"
 }
 
 resource "aws_lambda_function" "fetcher_lambda" {
@@ -14,6 +15,7 @@ resource "aws_lambda_function" "fetcher_lambda" {
   source_code_hash = data.archive_file.fetcher_lambda_zip.output_base64sha256
   timeout          = 60 * 5 // 5 minutes
   architectures    = ["arm64"]
+  layers           = [aws_lambda_layer_version.fetcher_lambda_layer.arn]
 
   environment {
     variables = {
@@ -28,6 +30,20 @@ data "archive_file" "fetcher_lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/../${local.fetcher_function_name}/dist"
   output_path = local.fetcher_zip_path
+}
+
+resource "aws_lambda_layer_version" "fetcher_lambda_layer" {
+  filename         = "temp/${local.fetcher_function_name}-layer.zip"
+  layer_name       = "${local.fetcher_function_name}-layer"
+  source_code_hash = data.archive_file.fetcher_lambda_layer_zip.output_base64sha256
+
+  compatible_runtimes = ["nodejs20.x"]
+}
+
+data "archive_file" "fetcher_lambda_layer_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/../${local.fetcher_function_name}-layer"
+  output_path = local.fetcher_layer_zip_path
 }
 
 resource "aws_cloudwatch_event_rule" "fetcher_every_five_minutes" {

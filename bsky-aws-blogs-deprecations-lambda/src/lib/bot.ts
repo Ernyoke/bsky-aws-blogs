@@ -1,12 +1,10 @@
 import {bskyAccount, config} from "./config.js";
 import type {AppBskyFeedPost, AtpAgentLoginOpts,} from "@atproto/api";
 import atproto from "@atproto/api";
-import {Article} from "./article.js";
 import {Logger} from "@aws-lambda-powertools/logger";
 import moment from "moment";
-import sizeOf from "buffer-image-size";
-import sharp from "sharp";
 import { dedent } from "ts-dedent";
+import {Article, CoverImage} from "shared";
 
 const {BskyAgent} = atproto;
 
@@ -20,12 +18,16 @@ const defaultOptions: BotOptions = {
     dryRun: config.bskyDryRun,
 }
 
+const MAX_SIZE = 976.56; // max size allowed in Kb allowed for an image for uploading it to Bsky
+
 export default class Bot {
     #agent;
+    #coverImage: CoverImage;
 
     constructor(private logger: Logger, options: BotOptions = defaultOptions) {
         const {service} = options;
         this.#agent = new BskyAgent({service});
+        this.#coverImage = new CoverImage(this.logger);
     }
 
     login(loginOpts: AtpAgentLoginOpts = bskyAccount) {
@@ -40,7 +42,13 @@ export default class Bot {
 
         const encoder = new TextEncoder();
 
-        const coverImageData = await this.resizeAndUploadImage(article.cover);
+        const resizeResult = await this.#coverImage.fetchAndResizeImage(article.cover, MAX_SIZE);
+
+        let coverImageData = null;
+        if (resizeResult) {
+            const uploadResponse = await this.#agent.uploadBlob(resizeResult?.buffer, {encoding: resizeResult?.mime});
+            coverImageData = uploadResponse.data;
+        }
 
         const warningWithServices: string = dedent`
             ⚠️ Deprecation warning!
@@ -98,60 +106,5 @@ export default class Bot {
         } as AppBskyFeedPost.Record;
 
         return await this.#agent.post(record);
-    }
-
-    async resizeAndUploadImage(url: string | null | undefined, dryRun: boolean = defaultOptions.dryRun) {
-
-        if (!url) {
-            this.logger.info(`Empty source url provided for the cover image! Skipping uploading it!`);
-            return;
-        }
-
-        const coverImage = await fetch(url);
-        const blob = await coverImage.blob();
-        const arrayBuffer = Buffer.from(await blob.arrayBuffer());
-        const resizedBuffer = await this.tryResize(arrayBuffer);
-
-        if (dryRun) {
-            this.logger.info(`Cover image not uploaded! Reason: dry run`);
-            return;
-        }
-
-        const {data} = await this.#agent.uploadBlob(resizedBuffer, {encoding: blob.type});
-
-        return data;
-    }
-
-    async tryResize(buffer: Buffer) {
-        const MAX_SIZE = 976.56; // max size allowed in Kb
-
-        const sizeInKb = buffer.byteLength / 1024;
-        if (sizeInKb <= MAX_SIZE) {
-            this.logger.info(`Cover image size is ${sizeInKb} Kb. No resize is necessary.`);
-            return buffer;
-        }
-
-        const percentages = [0.9, 0.75, 0.6, 0.5, 0.4, 0.25];
-
-        for (const percentage of percentages) {
-            const sizeInKb = buffer.byteLength / 1024;
-
-            if (sizeInKb > MAX_SIZE) {
-                const dimensions = sizeOf(buffer);
-
-                const resizedBuffer = await sharp(buffer)
-                    .resize(Math.ceil(dimensions.width * 0.5), Math.ceil(dimensions.height * 0.5))
-                    .toBuffer();
-
-                const newSize = resizedBuffer.byteLength / 1024;
-
-                if (newSize <= MAX_SIZE) {
-                    this.logger.info(`Cover image resized to ${newSize} Kb. This is ${percentage} of the original size.`);
-                    return resizedBuffer;
-                }
-            }
-        }
-
-        this.logger.warn(`Cover image is way too large, ${sizeInKb / 1024} Mb! Could not resize image!`);
     }
 }

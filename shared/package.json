@@ -1,0 +1,25 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "These are some shared modules between all the lambda functions from these projects.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ervin Szilagyi",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "buffer-image-size": "^0.6.4",
+    "file-type": "^19.6.0",
+    "sharp": "^0.33.5"
+  },
+  "peerDependencies": {
+    "@aws-lambda-powertools/logger": "^2.10.0"
+  }
+}

@@ -1,6 +1,7 @@
 locals {
   deprecations_function_name  = "${var.project_name}-deprecations-lambda"
   deprecations_zip_path       = "${path.module}/temp/${local.deprecations_function_name}.zip"
+  deprecations_layer_zip_path = "${path.module}/temp/${local.deprecations_function_name}-layer.zip"
   deprecations_lambda_timeout = 60 * 5 // 5 minutes
 }
 
@@ -16,6 +17,7 @@ resource "aws_lambda_function" "deprecations_lambda" {
   timeout                        = local.deprecations_lambda_timeout
   architectures                  = ["arm64"]
   reserved_concurrent_executions = 1
+  layers                         = [aws_lambda_layer_version.deprecations_lambda_layer.arn]
 
   dead_letter_config {
     target_arn = aws_sqs_queue.deprecations_lambda_dlq.arn
@@ -23,14 +25,14 @@ resource "aws_lambda_function" "deprecations_lambda" {
 
   environment {
     variables = {
-      BSKY_DRY_RUN    = var.dry_run
-      SECRET_NAME     = aws_secretsmanager_secret.deprecations_bsky_secrets.name
-      TABLE_NAME      = aws_dynamodb_table.table.name
-      CLAUDE_MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
-      CLAUDE_REGION   = var.region
-      TITAN_MODEL_ID  = "amazon.titan-text-express-v1"
-      TITAN_REGION    = var.region
-      TITAN_MAX_TOKEN_SIZE=8192
+      BSKY_DRY_RUN         = var.dry_run
+      SECRET_NAME          = aws_secretsmanager_secret.deprecations_bsky_secrets.name
+      TABLE_NAME           = aws_dynamodb_table.table.name
+      CLAUDE_MODEL_ID      = "anthropic.claude-3-haiku-20240307-v1:0"
+      CLAUDE_REGION        = var.region
+      TITAN_MODEL_ID       = "amazon.titan-text-express-v1"
+      TITAN_REGION         = var.region
+      TITAN_MAX_TOKEN_SIZE = 8192
     }
   }
 }
@@ -44,6 +46,20 @@ data "archive_file" "deprecations_lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/../${local.deprecations_function_name}/dist"
   output_path = local.deprecations_zip_path
+}
+
+resource "aws_lambda_layer_version" "deprecations_lambda_layer" {
+  filename         = "temp/${local.deprecations_function_name}-layer.zip"
+  layer_name       = "${local.deprecations_function_name}-layer"
+  source_code_hash = data.archive_file.deprecations_lambda_layer_zip.output_base64sha256
+
+  compatible_runtimes = ["nodejs20.x"]
+}
+
+data "archive_file" "deprecations_lambda_layer_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/../${local.deprecations_function_name}-layer"
+  output_path = local.deprecations_layer_zip_path
 }
 
 resource "aws_lambda_event_source_mapping" "deprecations_event_source_mapping" {

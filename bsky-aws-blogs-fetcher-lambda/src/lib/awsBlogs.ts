@@ -1,4 +1,4 @@
-import {Article} from "./article.js";
+import {Article} from "shared";
 
 interface Response {
     items: BlogPost[]

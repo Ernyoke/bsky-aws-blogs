@@ -20,7 +20,9 @@ const secrets = secretsSchema.parse(JSON.parse(await getSecret(envVars.SECRET_NA
 
 export const bskyAccount: AtpAgentLoginOpts = {
     identifier: secrets.handle,
+    // identifier: 'awstest.bsky.social',
     password: secrets.password,
+    // password: "tp6h-cucn-qj3h-vmss"
 };
 
 export const config = {

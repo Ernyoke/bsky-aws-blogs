@@ -5,11 +5,11 @@ import {
     QueryCommand,
     QueryCommandInput
 } from "@aws-sdk/client-dynamodb";
-import {Article} from "./article.js";
 import {marshall} from "@aws-sdk/util-dynamodb";
 import _ from "lodash";
 import {Logger} from "@aws-lambda-powertools/logger";
 import {config} from "./config.js";
+import {Article} from "shared";
 
 const tableName = config.tableName;
 

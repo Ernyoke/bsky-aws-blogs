@@ -1,8 +1,8 @@
 import {Context, SQSEvent, SQSHandler, SQSRecord} from 'aws-lambda';
 import Bot from "./lib/bot.js";
-import {Article} from './lib/article.js';
 import {Logger} from '@aws-lambda-powertools/logger';
 import {BatchProcessor, EventType, processPartialResponse} from "@aws-lambda-powertools/batch";
+import {Article} from "shared";
 
 const logger = new Logger();
 const processor = new BatchProcessor(EventType.SQS);

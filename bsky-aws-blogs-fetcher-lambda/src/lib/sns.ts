@@ -1,7 +1,7 @@
 import {Logger} from "@aws-lambda-powertools/logger";
 import {PublishCommand, SNSClient} from "@aws-sdk/client-sns";
-import {Article} from "./article.js";
 import {config} from "./config.js";
+import {Article} from "shared";
 
 export default class SNSPublisher {
     private client: SNSClient;

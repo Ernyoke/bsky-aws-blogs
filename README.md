@@ -18,24 +18,41 @@ The purpose of these bot is to automatically re-share blog posts published by AW
 
 ### Deployment Steps
 
+1. Build the lambda layers
+
+```
+cd bsky-aws-blogs-deprecations-lambda-layer
+npm install --install-links --cpu=arm64 --os=linux --omit=dev --ignore-scripts
+```
+
+```
+cd bsky-aws-blogs-fetcher-lambda-layer
+npm install --install-links --cpu=arm64 --os=linux --omit=dev --ignore-scripts
+```
+
+```
+bsky-aws-blogs-lambda-layer
+npm install --install-links --cpu=arm64 --os=linux --omit=dev --ignore-scripts
+```
+
 1. Build the lambda functions:
 
 ```
 cd bsky-aws-blogs-deprecations-lambda
-npm ci
-npm run build:prod
+npm install
+npm run build
 ```
 
 ```
 cd bsky-aws-blogs-fetcher-lambda
-npm ci
-npm run build:prod
+npm install
+npm run build
 ```
 
 ```
 cd bsky-aws-blogs-lambda
-npm ci
-npm run build:prod
+npm install
+npm run build
 ```
 
 1. Deploy the infrastructure

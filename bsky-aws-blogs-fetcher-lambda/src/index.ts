@@ -1,10 +1,10 @@
 import {Context, Handler} from 'aws-lambda';
 import DynamoClient from './lib/dynamoDB.js';
 import _ from 'lodash';
-import {Article} from './lib/article.js';
 import {Logger} from '@aws-lambda-powertools/logger';
 import fetchArticles from "./lib/awsBlogs.js";
 import SNSPublisher from "./lib/sns.js";
+import {Article} from "shared";
 
 const logger = new Logger();
 const db = new DynamoClient(logger);

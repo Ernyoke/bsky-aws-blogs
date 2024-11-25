@@ -1,6 +1,7 @@
 locals {
   blogs_function_name  = "${var.project_name}-lambda"
   blogs_zip_path       = "${path.module}/temp/${local.blogs_function_name}.zip"
+  blogs_layer_zip_path = "${path.module}/temp/${local.blogs_function_name}-layer.zip"
   blogs_lambda_timeout = 60 * 5 // 5 minutes
 }
 
@@ -15,6 +16,7 @@ resource "aws_lambda_function" "blogs_lambda" {
   source_code_hash = data.archive_file.blogs_lambda_zip.output_base64sha256
   timeout          = local.blogs_lambda_timeout
   architectures    = ["arm64"]
+  layers           = [aws_lambda_layer_version.blogs_lambda_layer.arn]
 
   dead_letter_config {
     target_arn = aws_sqs_queue.blogs_lambda_dlq.arn
@@ -32,6 +34,20 @@ data "archive_file" "blogs_lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/../${local.blogs_function_name}/dist"
   output_path = local.blogs_zip_path
+}
+
+resource "aws_lambda_layer_version" "blogs_lambda_layer" {
+  filename         = "temp/${local.blogs_function_name}-layer.zip"
+  layer_name       = "${local.blogs_function_name}-layer"
+  source_code_hash = data.archive_file.blogs_lambda_layer_zip.output_base64sha256
+
+  compatible_runtimes = ["nodejs20.x"]
+}
+
+data "archive_file" "blogs_lambda_layer_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/../${local.blogs_function_name}-layer"
+  output_path = local.blogs_layer_zip_path
 }
 
 resource "aws_lambda_event_source_mapping" "blogs_event_source_mapping" {

@@ -1,0 +1,30 @@
+{
+  "name": "bsky-aws-blogs-fetcher-lambda",
+  "version": "1.0.0",
+  "description": "Lambda layer for bsky-aws-blogs-fetcher-lambda.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf node_modules"
+  },
+  "keywords": [
+    "bsky",
+    "bluesky",
+    "atproto",
+    "bot"
+  ],
+  "author": {
+    "name": "Ervin Szilagyi",
+    "url": "https://ervinszilagyi.dev"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@aws-lambda-powertools/logger": "^2.11.0",
+    "@aws-lambda-powertools/parameters": "^2.11.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "shared": "file:../../shared",
+    "zod": "^3.21.4"
+  }
+}

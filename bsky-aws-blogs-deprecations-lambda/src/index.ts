@@ -1,11 +1,11 @@
 import {Context, SQSEvent, SQSHandler, SQSRecord} from 'aws-lambda';
 import Bot from "./lib/bot.js";
-import {Article} from './lib/article.js';
 import {Logger} from '@aws-lambda-powertools/logger';
 import {fetchArticleAsText} from "./lib/awsBlogs.js";
 import {BatchProcessor, EventType, processPartialResponse} from "@aws-lambda-powertools/batch";
 import {Decision, TitanModel} from "./lib/titan.js";
 import {ClaudeModel} from "./lib/claude.js";
+import {Article} from "shared";
 
 const logger = new Logger();
 const processor = new BatchProcessor(EventType.SQS);
