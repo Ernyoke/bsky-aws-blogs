@@ -5,6 +5,7 @@ import {config} from "./config.js";
 import {dedent} from "ts-dedent";
 import {Logger} from "@aws-lambda-powertools/logger";
 import {BaseMessage, trimMessages} from "@langchain/core/messages";
+import _ from "lodash";
 
 const maxTokenSize = config.titanMaxTokenSize;
 
@@ -78,7 +79,8 @@ export class TitanModel {
 
     async checkIfArticleIsAboutDeprecation(title: string, content: string) {
         const trimmer = trimMessages({
-            maxTokens: maxTokenSize,
+            // TODO: find a better solution for this. It seems like getNumTokens is not as accurate.
+            maxTokens: _.toInteger(maxTokenSize * 0.8),
             tokenCounter: async (messages: BaseMessage[]) => {
                 const nrTokens = await this.model.getNumTokens(
                     messages

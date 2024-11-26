@@ -57,6 +57,17 @@ const art5 = new Article(
     ["AWS", "AI", "MachineLearning"]
 )
 
+const art6 = new Article(
+    'blog-posts#38-24723',
+    'Simplify global hybrid connectivity with AWS Cloud WAN and AWS Direct Connect integration',
+    'In this post, we review how you can build hybrid connectivity architectures using the AWS Cloud WAN built-in support for AWS Direct Connect attachments. We share best practices and considerations for designing global hybrid networks on AWS that help you enable seamless connectivity between your on-premises environments and the AWS Cloud. Now, AWS Cloud WAN [...]',
+    '2024-11-25T19:41:39+0000',
+    'https://aws.amazon.com/blogs/networking-and-content-delivery/simplify-global-hybrid-connectivity-with-aws-cloud-wan-and-aws-direct-connect-integration/',
+    'https://d2908q01vomqb2.cloudfront.net/5b384ce32d8cdef02bc3a139d4cac0a22bb029e8/2024/11/24/filename_x4l7b8b_1200x628.jpg',
+    ["Alexandra Huides", "Jordan Rojas Garcia"],
+    ["AWS", "CDN", "Networking"]
+)
+
 const event = {
     Records: [
         {
@@ -78,6 +89,10 @@ const event = {
         {
             messageId: "id5",
             body: JSON.stringify(art5)
+        },
+        {
+            messageId: "id6",
+            body: JSON.stringify(art6)
         }
     ]
 } as SQSEvent;
