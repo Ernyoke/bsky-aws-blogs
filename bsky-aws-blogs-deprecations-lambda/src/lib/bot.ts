@@ -99,7 +99,8 @@ export default class Bot {
                 external: {
                     uri: article.url,
                     title: article.title,
-                    description: article.postExcerpt,
+                    // Description cannot be empty, use title in case it is empty!
+                    description: article.postExcerpt ? article.postExcerpt : article.title,
                     thumb: coverImageData?.blob
                 }
             }

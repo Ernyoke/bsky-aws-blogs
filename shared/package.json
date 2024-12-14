@@ -1,13 +1,14 @@
 {
   "name": "shared",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "These are some shared modules between all the lambda functions from these projects.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "tsc"
   },
   "author": "Ervin Szilagyi",
   "license": "MIT",

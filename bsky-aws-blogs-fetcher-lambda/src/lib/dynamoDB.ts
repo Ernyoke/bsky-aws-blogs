@@ -68,11 +68,12 @@ export default class DynamoClient {
 
     async saveArticleBatch(articles: Article[], expireAt: number) {
         const putRequests = articles.map(article => {
+            const publishedDateTime = article.publishedDate ? new Date(article.publishedDate) : new Date();
             const item = marshall({
                 ArticleId: article.id,
                 Title: article.title,
                 Authors: article.authorList,
-                PublishedDateTime: new Date(article.publishedDate).getTime() / 1000,
+                PublishedDateTime: publishedDateTime.getTime() / 1000,
                 TimeToExist: expireAt
             });
             return {

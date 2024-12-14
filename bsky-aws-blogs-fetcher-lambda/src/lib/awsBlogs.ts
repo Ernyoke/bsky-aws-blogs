@@ -1,4 +1,4 @@
-import {Article} from "shared";
+import {Article, ArticleBuilder} from "shared";
 
 interface Response {
     items: BlogPost[]
@@ -75,15 +75,16 @@ const categories: { [key: string]: string[] } = {
 };
 
 function mapFromDevToFormat(blogPost: BlogPost): Article {
-    return new Article(blogPost.item.id,
-        blogPost.item.additionalFields.title,
-        blogPost.item.additionalFields.postExcerpt,
-        blogPost.item.dateCreated,
-        blogPost.item.additionalFields.link,
-        dropResolutionFromCoverImage(blogPost.item.additionalFields.featuredImageUrl),
-        blogPost.item.additionalFields.contributors.split(', '),
-        ['AWS', ...extractMainCategories(blogPost.item.additionalFields.link)]
-    );
+    const articleBuilder = new ArticleBuilder();
+    return articleBuilder.setId(blogPost.item.id)
+        .setTitle(blogPost.item.additionalFields.title)
+        .setUrl(blogPost.item.additionalFields.link)
+        .setPostExcerpt(blogPost.item.additionalFields.postExcerpt)
+        .setPublishedDate(blogPost.item.dateCreated)
+        .setCover(dropResolutionFromCoverImage(blogPost.item.additionalFields.featuredImageUrl))
+        .addAuthors(...blogPost.item.additionalFields.contributors.split(', '))
+        .addCategories('AWS', ...extractMainCategories(blogPost.item.additionalFields.link))
+        .build();
 }
 
 function extractMainCategories(link: string) {
