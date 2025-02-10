@@ -1,15 +1,15 @@
-import {ChatPromptTemplate} from "@langchain/core/prompts";
-import {BedrockChat} from "@langchain/community/chat_models/bedrock";
-import {config} from "./config.js";
+import {LlmModel, YesNoOutputParser} from "./llm.js";
 import {dedent} from "ts-dedent";
+import {ChatPromptTemplate} from "@langchain/core/prompts";
+import {ChatBedrockConverse} from "@langchain/aws";
+import {config} from "./config.js";
 import {Logger} from "@aws-lambda-powertools/logger";
 import {BaseMessage, trimMessages} from "@langchain/core/messages";
 import _ from "lodash";
-import {LlmModel, YesNoOutputParser} from "./llm.js";
 
-const maxTokenSize = config.titanMaxTokenSize;
+const maxTokenSize = config.novaMaxTokenSize;
 
-export class TitanModel implements LlmModel {
+export class NovaMicro implements LlmModel {
     systemPrompt = dedent`You are an AWS expert whose job is to read AWS blog posts and determine whether the blog post is about the 
             deprecation of an AWS service, product, or any related feature. Examples of such services include EC2, ECS, S3, 
             and CodeDeploy, among others. If you identify a blog post mentioning the deprecation of any such service or product, 
@@ -31,14 +31,10 @@ export class TitanModel implements LlmModel {
         ]
     ]);
 
-    private model = new BedrockChat({
-        model: config.titanModelId,
-        region: config.titanRegion,
-        modelKwargs: {
-            textGenerationConfig: {
-                temperature: 0.1
-            }
-        }
+    private model = new ChatBedrockConverse({
+        model: config.novaModelId,
+        region: config.novaRegion,
+        temperature: 0.1
     });
 
     private readonly parser: YesNoOutputParser;
