@@ -7,7 +7,7 @@ import {Logger} from "@aws-lambda-powertools/logger";
 import {BaseMessage, trimMessages} from "@langchain/core/messages";
 import _ from "lodash";
 
-const maxTokenSize = config.novaMaxTokenSize;
+const maxTokenSize = config.novaMicroMaxTokenSize;
 
 export class NovaMicro implements LlmModel {
     systemPrompt = dedent`You are an AWS expert whose job is to read AWS blog posts and determine whether the blog post is about the 
@@ -32,8 +32,8 @@ export class NovaMicro implements LlmModel {
     ]);
 
     private model = new ChatBedrockConverse({
-        model: config.novaModelId,
-        region: config.novaRegion,
+        model: config.novaMicroModelId,
+        region: config.novaMicroRegion,
         temperature: 0.1
     });
 

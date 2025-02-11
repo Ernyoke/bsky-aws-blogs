@@ -11,6 +11,8 @@ const parseNumber = (val: string) => {
     return parsed;
 };
 
+const errorMsg = "Number must be non-negative";
+
 const envSchema = z.object({
     BSKY_SERVICE: z.string().min(1).default("https://bsky.social"),
     BSKY_DRY_RUN: z.enum(['true', 'false']).transform((value: string) => value === 'true'),
@@ -20,14 +22,19 @@ const envSchema = z.object({
     CLAUDE_REGION: z.string().min(1),
     TITAN_MODEL_ID: z.string().min(1),
     TITAN_REGION: z.string().min(1),
-    NOVA_MODEL_ID: z.string().min(1),
-    NOVA_REGION: z.string().min(1),
     TITAN_MAX_TOKEN_SIZE: z.string()
         .transform(parseNumber)
-        .refine((num) => num >= 0, {message: "Number must be non-negative"}),
-    NOVA_MAX_TOKEN_SIZE: z.string()
+        .refine((num) => num >= 0, {message: errorMsg}),
+    NOVA_MICRO_MODEL_ID: z.string().min(1),
+    NOVA_MICRO_REGION: z.string().min(1),
+    NOVA_MICRO_MAX_TOKEN_SIZE: z.string()
         .transform(parseNumber)
-        .refine((num) => num >= 0, {message: "Number must be non-negative"}),
+        .refine((num) => num >= 0, {message: errorMsg}),
+    NOVA_PRO_MODEL_ID: z.string().min(1),
+    NOVA_PRO_REGION: z.string().min(1),
+    NOVA_PRO_MAX_TOKEN_SIZE: z.string()
+        .transform(parseNumber)
+        .refine((num) => num >= 0, {message: errorMsg})
 });
 
 const envVars = envSchema.parse(env);
@@ -40,10 +47,13 @@ export const config = {
     claudeRegion: envVars.CLAUDE_REGION,
     titanModelId: envVars.TITAN_MODEL_ID,
     titanRegion: envVars.TITAN_REGION,
-    novaModelId: envVars.NOVA_MODEL_ID,
-    novaRegion: envVars.NOVA_REGION,
     titanMaxTokenSize: envVars.TITAN_MAX_TOKEN_SIZE,
-    novaMaxTokenSize: envVars.TITAN_MAX_TOKEN_SIZE,
+    novaMicroModelId: envVars.NOVA_MICRO_MODEL_ID,
+    novaMicroRegion: envVars.NOVA_MICRO_REGION,
+    novaMicroMaxTokenSize: envVars.NOVA_MICRO_MAX_TOKEN_SIZE,
+    novaProModelId: envVars.NOVA_PRO_MODEL_ID,
+    novaProRegion: envVars.NOVA_PRO_REGION,
+    novaProMaxTokenSize: envVars.NOVA_PRO_MAX_TOKEN_SIZE,
 };
 
 const secretsSchema = z.object({

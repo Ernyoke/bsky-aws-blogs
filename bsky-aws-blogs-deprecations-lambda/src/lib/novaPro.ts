@@ -28,8 +28,8 @@ export class NovaPro {
     ]);
 
     model = new ChatBedrockConverse({
-        model: config.claudeModelId,
-        region: config.claudeRegion
+        model: config.novaProModelId,
+        region: config.novaProRegion
     });
 
     structuredParser = StructuredOutputParser.fromZodSchema(
