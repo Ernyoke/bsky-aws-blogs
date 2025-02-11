@@ -47,6 +47,7 @@ const categories: { [key: string]: string[] } = {
     'desktop-and-application-streaming': ['DesktopStreaming', 'ApplicationStreaming'],
     'developer': ['Developers'],
     'devops': ['DevOps', 'DeveloperProductivity'],
+    'dotnet': ['DotNet'],
     'enterprise-strategy': ['EnterpriseStrategy'],
     'mobile': ['FrontEnd', 'Mobile'],
     'gametech': ['GameTech'],
@@ -68,7 +69,9 @@ const categories: { [key: string]: string[] } = {
     'robotics': ['Robotics'],
     'awsforsap': ['SAP'],
     'security': ['Security', 'Identity', 'Compliance'],
+    'smb': ['SmartBusiness'],
     'spatial': ['SpatialComputing'],
+    'supply-chain': ['SupplyChain', 'Logistics'],
     'startups': ['Startups'],
     'storage': ['Storage'],
     'training-and-certification': ['Training', 'Certification']
