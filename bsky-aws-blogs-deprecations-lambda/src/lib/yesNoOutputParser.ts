@@ -36,7 +36,3 @@ export class YesNoOutputParser extends BaseOutputParser<Decision> {
         return `You should answer with either YES or NO. Important: Don't include anything else in your answer!!!`;
     }
 }
-
-export interface LlmModel {
-    checkIfArticleIsAboutDeprecation(title: string, content: string): Promise<Decision>;
-}

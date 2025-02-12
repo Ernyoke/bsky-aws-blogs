@@ -3,19 +3,15 @@ import Bot from "./lib/bot.js";
 import {Logger} from '@aws-lambda-powertools/logger';
 import {fetchArticleAsText} from "./lib/awsBlogs.js";
 import {BatchProcessor, EventType, processPartialResponse} from "@aws-lambda-powertools/batch";
-import {TitanModel} from "./lib/titan.js";
-import {ClaudeModel} from "./lib/claude.js";
 import {Article} from "shared";
-import {Decision} from "./lib/llm.js";
+import {Decision} from "./lib/yesNoOutputParser.js";
 import {NovaMicro} from "./lib/novaMicro.js";
 import {NovaPro} from "./lib/novaPro.js";
 
 const logger = new Logger();
 const processor = new BatchProcessor(EventType.SQS);
 const bot = new Bot(logger);
-const titan = new TitanModel(logger);
 const novaMicro = new NovaMicro(logger);
-const claude = new ClaudeModel(logger);
 const novaPro = new NovaPro(logger);
 
 const recordHandler = async (record: SQSRecord): Promise<void> => {
@@ -26,10 +22,10 @@ const recordHandler = async (record: SQSRecord): Promise<void> => {
             const articleText = await fetchArticleAsText(article.url);
             switch (await novaMicro.checkIfArticleIsAboutDeprecation(article.title, articleText)) {
                 case Decision.False:
-                    logger.info(`Titan decided that article ${article.id} with title "${article.title}" is NOT about deprecations.`);
+                    logger.info(`NovaMicro decided that article ${article.id} with title "${article.title}" is NOT about deprecations.`);
                     break;
                 case Decision.Unknown:
-                    logger.info(`Titan could not decide if article ${article.id} with title "${article.title}" is about deprecations.`);
+                    logger.info(`NovaMicro could not decide if article ${article.id} with title "${article.title}" is about deprecations.`);
                     // Fall through and double check with NovaPro
                 case Decision.True:
                     // Double check with NovaPro
