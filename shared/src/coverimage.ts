@@ -1,12 +1,12 @@
-import {Logger} from "@aws-lambda-powertools/logger";
 import sizeOf from "buffer-image-size";
 import sharp from "sharp";
 import {fileTypeFromBuffer} from "file-type";
+import type {LoggerInterface} from "@aws-lambda-powertools/logger/types";
 
-export default class Coverimage {
-    private logger: Logger;
+export default class CoverImage {
+    private logger: LoggerInterface;
 
-    constructor(logger: Logger) {
+    constructor(logger: LoggerInterface) {
         this.logger = logger;
     }
 

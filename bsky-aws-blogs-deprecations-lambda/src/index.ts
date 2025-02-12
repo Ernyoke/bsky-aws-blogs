@@ -3,15 +3,16 @@ import Bot from "./lib/bot.js";
 import {Logger} from '@aws-lambda-powertools/logger';
 import {fetchArticleAsText} from "./lib/awsBlogs.js";
 import {BatchProcessor, EventType, processPartialResponse} from "@aws-lambda-powertools/batch";
-import {Decision, TitanModel} from "./lib/titan.js";
-import {ClaudeModel} from "./lib/claude.js";
 import {Article} from "shared";
+import {Decision} from "./lib/yesNoOutputParser.js";
+import {NovaMicro} from "./lib/novaMicro.js";
+import {NovaPro} from "./lib/novaPro.js";
 
 const logger = new Logger();
 const processor = new BatchProcessor(EventType.SQS);
 const bot = new Bot(logger);
-const titan = new TitanModel(logger);
-const claude = new ClaudeModel(logger);
+const novaMicro = new NovaMicro(logger);
+const novaPro = new NovaPro(logger);
 
 const recordHandler = async (record: SQSRecord): Promise<void> => {
     const payload = record.body;
@@ -19,25 +20,25 @@ const recordHandler = async (record: SQSRecord): Promise<void> => {
         const article = JSON.parse(payload) as Article;
         try {
             const articleText = await fetchArticleAsText(article.url);
-            switch (await titan.checkIfArticleIsAboutDeprecation(article.title, articleText)) {
+            switch (await novaMicro.checkIfArticleIsAboutDeprecation(article.title, articleText)) {
                 case Decision.False:
-                    logger.info(`Titan decided that article ${article.id} with title "${article.title}" is NOT about deprecations.`);
+                    logger.info(`NovaMicro decided that article ${article.id} with title "${article.title}" is NOT about deprecations.`);
                     break;
                 case Decision.Unknown:
-                    logger.info(`Titan could not decide if article ${article.id} with title "${article.title}" is about deprecations.`);
-                    // Fall through and double check with Claude
+                    logger.info(`NovaMicro could not decide if article ${article.id} with title "${article.title}" is about deprecations.`);
+                    // Fall through and double check with NovaPro
                 case Decision.True:
-                    // Double check with Claude
+                    // Double check with NovaPro
                     const {
                         isAboutDeprecation,
                         deprecationSummary
-                    } = await claude.checkIfArticleContainsDeprecations(article.title, articleText);
+                    } = await novaPro.checkIfArticleContainsDeprecations(article.title, articleText);
                     if (isAboutDeprecation) {
-                        logger.info(`Claude decided that article ${article.id} with title "${article.title}" is about deprecating services.`);
+                        logger.info(`NovaPro decided that article ${article.id} with title "${article.title}" is about deprecating services.`);
                         const result = await bot.post(article, deprecationSummary);
                         logger.info(`Posted article ${article.id} with title "${article.title}. Post URI: ${result?.uri}`);
                     } else {
-                        logger.info(`Claude decided that article ${article.id} with title "${article.title}" is not about any service deprecation.`);
+                        logger.info(`NovaPro decided that article ${article.id} with title "${article.title}" is not about any service deprecation.`);
                     }
                     break;
             }
