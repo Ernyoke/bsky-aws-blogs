@@ -40,14 +40,14 @@ const event = {
             messageId: "id1",
             body: JSON.stringify(deprecation)
         },
-        {
-            messageId: "id2",
-            body: JSON.stringify(notDeprecation)
-        },
-        {
-            messageId: "id3",
-            body: JSON.stringify(longArticle)
-        }
+        // {
+        //     messageId: "id2",
+        //     body: JSON.stringify(notDeprecation)
+        // },
+        // {
+        //     messageId: "id3",
+        //     body: JSON.stringify(longArticle)
+        // }
     ]
 } as SQSEvent;
 

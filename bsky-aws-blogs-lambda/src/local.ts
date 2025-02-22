@@ -41,27 +41,41 @@ const artWithResizeImageAccessDenied = new ArticleBuilder()
     .setPublishedDate('2024-11-22T23:38:56+0000')
     .setUrl('https://aws.amazon.com/blogs/storage/fundrise-uses-amazon-s3-express-one-zone-to-accelerate-investment-data-processing/')
     .setCover('https://d2908q01vomqb2.cloudfront.net/e1822db470e60d090affd0956d743cb0e7cdf113/2024/09/19/Amazon-S3-Express-One-Zone-thumbnail-e1726771394157.png')
-    .addAuthors('Louie Tambellini','Matt Krauser','Sam Farber','Karthik Akula')
+    .addAuthors('Louie Tambellini', 'Matt Krauser', 'Sam Farber', 'Karthik Akula')
     .addCategories('AWS', 'Storage')
     .build();
+
+const grapheme = new ArticleBuilder()
+    .setId('blog-posts#5-99617')
+    .setTitle('Turbocharging premium audit capabilities with the power of generative AI: Verisk’s journey toward a sophisticated conversational chat platform to enhance customer support')
+    .setUrl('https://aws.amazon.com/blogs/machine-learning/turbocharging-premium-audit-capabilities-with-the-power-of-generative-ai-verisks-journey-toward-a-sophisticated-conversational-chat-platform-to-enhance-customer-support/')
+    .addAuthors("Michelle Stahl Sajin Jacob", "Jerry Chen", "Siddarth Mohanram", "Luis Barbier", "Kristen Chenowith", "Arun Pradeep Selvaraj", "Ryan Doty")
+    .addCategories("AWS", "AI", "MachineLearning")
+    .setPostExcerpt('Verisk’s Premium Audit Advisory Service is the leading source of technical information and training for premium auditors and underwriters. In this post, we describe the development of the customer support process in PAAS, incorporating generative AI, the data, the architecture, and the evaluation of the results. Conversational AI assistants are rapidly transforming customer and employee support.')
+    .setPublishedDate('2025-02-20T17:13:48+0000')
+    .setCover('https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2025/02/13/ML-17110_arch_diag_001.png')
 
 const event = {
     Records: [
         {
             messageId: "id1",
-            body: deprecation
+            body: JSON.stringify(deprecation)
         },
         {
             messageId: "id2",
-            body: notDeprecation
+            body: JSON.stringify(notDeprecation)
         },
         {
             messageId: "id4",
-            body: longArticle,
+            body: JSON.stringify(longArticle),
         },
         {
             messageId: "id3",
             body: JSON.stringify(artWithResizeImageAccessDenied)
+        },
+        {
+            messageId: "id5",
+            body: JSON.stringify(grapheme)
         }
     ]
 } as SQSEvent;

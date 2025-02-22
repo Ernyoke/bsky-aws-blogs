@@ -1,10 +1,12 @@
 import {bskyAccount, config} from "./config.js";
-import atproto, {AppBskyFeedPost, AtpAgentLoginOpts,} from "@atproto/api";
+import atproto, {AppBskyFeedPost, AtpAgentLoginOpts, BlobRef,} from "@atproto/api";
 import {Logger} from "@aws-lambda-powertools/logger";
 import moment from "moment";
 import {Article, CoverImage} from "shared";
 
 const {BskyAgent} = atproto;
+
+const MAX_GRAPHEMES = 300 // Max number of graphemes allowed by BlueSky
 
 type BotOptions = {
     service: string | URL;
@@ -33,13 +35,6 @@ export default class Bot {
     }
 
     async post(article: Article, dryRun: boolean = defaultOptions.dryRun) {
-        if (dryRun) {
-            this.logger.info(`Article with title ${article.title} not posted! Reason: dry run.`);
-            return;
-        }
-
-        const encoder = new TextEncoder();
-
         const resizeResult = await this.#coverImage.fetchAndResizeImage(article.cover, MAX_SIZE);
 
         let coverImageData = null;
@@ -48,6 +43,26 @@ export default class Bot {
             coverImageData = uploadResponse.data;
         }
 
+        let record = this.buildRichTextRecord(article, coverImageData?.blob);
+
+        const postLength = record.text.length;
+        if (postLength > MAX_GRAPHEMES) {
+            this.logger.warn(`Post length for article '${article.title}' exceeds ${MAX_GRAPHEMES} graphemes. Content is truncated.`);
+            article.title =
+                this.truncateToGraphemes(article.title, Math.max(0, article.title.length - (postLength - MAX_GRAPHEMES)));
+            record = this.buildRichTextRecord(article, coverImageData?.blob);
+        }
+
+        if (dryRun) {
+            this.logger.info(`Article with title ${article.title} not posted! Reason: dry run.`);
+            return;
+        }
+
+        return await this.#agent.post(record);
+    }
+
+    buildRichTextRecord(article: Article, coverImageData: BlobRef | undefined) {
+        const encoder = new TextEncoder();
         const titleAndAuthors = `📰 New article by ${article.authorList.join(', ')}\n\n${article.title}\n`;
 
         let offset = encoder.encode(titleAndAuthors).byteLength + 1;
@@ -77,7 +92,7 @@ export default class Bot {
 
         const fullText = `${titleAndAuthors}\n${textLineWithTags}`;
 
-        const record = {
+        return {
             '$type': 'app.bsky.feed.post',
             createdAt: moment(article.publishedDate).toISOString(),
             text: fullText,
@@ -91,11 +106,19 @@ export default class Bot {
                     title: article.title,
                     // Description cannot be empty, use title in case it is empty!
                     description: article.postExcerpt ? article.postExcerpt : article.title,
-                    thumb: coverImageData?.blob
+                    thumb: coverImageData
                 }
             }
         } as AppBskyFeedPost.Record;
+    }
 
-        return await this.#agent.post(record);
+    truncateToGraphemes(text: string, maxGraphemes: number): string {
+        const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+        const graphemes = [...segmenter.segment(text)].map(segment => segment.segment);
+
+        if (graphemes.length > maxGraphemes) {
+            return graphemes.slice(0, maxGraphemes - 1).join("") + "…"; // Adding ellipsis
+        }
+        return text;
     }
 }

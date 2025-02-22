@@ -1,5 +1,5 @@
 import {bskyAccount, config} from "./config.js";
-import type {AppBskyFeedPost, AtpAgentLoginOpts,} from "@atproto/api";
+import type {AppBskyFeedPost, AtpAgentLoginOpts, BlobRef,} from "@atproto/api";
 import atproto from "@atproto/api";
 import {Logger} from "@aws-lambda-powertools/logger";
 import moment from "moment";
@@ -7,6 +7,8 @@ import { dedent } from "ts-dedent";
 import {Article, CoverImage} from "shared";
 
 const {BskyAgent} = atproto;
+
+const MAX_GRAPHEMES = 300 // Max number of graphemes allowed by BlueSky
 
 type BotOptions = {
     service: string | URL;
@@ -35,13 +37,6 @@ export default class Bot {
     }
 
     async post(article: Article, deprecationSummary: string, dryRun: boolean = defaultOptions.dryRun) {
-        if (dryRun) {
-            this.logger.info(`Article with title ${article.title} not posted! Reason: dry run.`);
-            return;
-        }
-
-        const encoder = new TextEncoder();
-
         const resizeResult = await this.#coverImage.fetchAndResizeImage(article.cover, MAX_SIZE);
 
         let coverImageData = null;
@@ -50,12 +45,38 @@ export default class Bot {
             coverImageData = uploadResponse.data;
         }
 
-        const warningWithServices: string = dedent`
-            ⚠️ Deprecation warning!
+        let record = this.buildRichTextRecord(article, deprecationSummary, coverImageData?.blob);
+        const postLength = record.text.length;
+        if (postLength > MAX_GRAPHEMES) {
+            this.logger.warn(`Post length for article '${article.title}' exceeds ${MAX_GRAPHEMES} graphemes. Content is truncated.`);
+            const deprecationSummaryTruncated =
+                this.truncateToGraphemes(deprecationSummary, Math.max(0, deprecationSummary.length - (postLength - MAX_GRAPHEMES)));
+            record = this.buildRichTextRecord(article, deprecationSummaryTruncated, coverImageData?.blob);
+        }
+
+        if (dryRun) {
+            this.logger.info(`Article with title ${article.title} not posted! Reason: dry run.`);
+            return;
+        }
+
+        return await this.#agent.post(record);
+    }
+
+    buildRichTextRecord(article: Article, deprecationSummary: string, coverImage: BlobRef | undefined) {
+        const encoder = new TextEncoder();
+
+        let warningWithServices: string;
+        if (deprecationSummary) {
+            warningWithServices = dedent`⚠️ Deprecation warning!
             
             ${deprecationSummary}
             
             `;
+        } else {
+            warningWithServices = dedent`⚠️ Deprecation warning!
+            
+            `;
+        }
 
         let offset = encoder.encode(warningWithServices).byteLength + 1;
 
@@ -87,7 +108,7 @@ export default class Bot {
         
         Read the full article:`;
 
-        const record = {
+        return {
             '$type': 'app.bsky.feed.post',
             createdAt: moment(article.publishedDate).toISOString(),
             text: fullText,
@@ -101,11 +122,19 @@ export default class Bot {
                     title: article.title,
                     // Description cannot be empty, use title in case it is empty!
                     description: article.postExcerpt ? article.postExcerpt : article.title,
-                    thumb: coverImageData?.blob
+                    thumb: coverImage
                 }
             }
         } as AppBskyFeedPost.Record;
+    }
 
-        return await this.#agent.post(record);
+    truncateToGraphemes(text: string, maxGraphemes: number): string {
+        const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+        const graphemes = [...segmenter.segment(text)].map(segment => segment.segment);
+
+        if (graphemes.length > maxGraphemes) {
+            return graphemes.slice(0, maxGraphemes - 1).join("") + "…"; // Adding ellipsis
+        }
+        return text;
     }
 }
